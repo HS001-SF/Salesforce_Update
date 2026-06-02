@@ -1,0 +1,12 @@
+Work Done - 2026-06-02
+
+Summary:
+Today I focused on strengthening my Salesforce skills and interview readiness.
+
+Details:
+- Prepared for the Salesforce interview by revising core concepts, including Apex, SOQL, and the platform's data model.
+- Completed several Trailhead challenges focused on integration, gaining hands-on practice with REST/SOAP callouts and external system connectivity.
+- Reviewed Salesforce integration patterns and best practices to deepen my practical understanding.
+
+Outcome:
+Improved my confidence with Salesforce integration concepts and made solid progress toward interview preparation.
