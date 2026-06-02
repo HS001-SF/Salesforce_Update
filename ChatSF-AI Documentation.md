@@ -136,6 +136,7 @@ GroqController
 
 # 10. Chat History Storage {#chat-history-storage-1}
 
+
 Every interaction is stored in Salesforce automatically.
 
 ## Stored Information
@@ -146,7 +147,40 @@ Every interaction is stored in Salesforce automatically.
 
 ------------------------------------------------------------------------
 
-# 11. How to Use ChatSF-AI {#how-to-use-chatsf-ai}
+# 11. Session ID Functionality
+
+- A unique Session ID is generated automatically when the user opens ChatSF-AI.
+- The Session ID is passed from Lightning Web Component (LWC) to Apex Controller.
+- Salesforce stores the Session ID along with user messages and AI responses.
+- User details are also stored for tracking purposes.
+
+### Example Session ID
+
+```text
+CHAT-174885500
+```
+
+---
+
+## Updated Application Flow
+
+1. User opens ChatSF-AI
+2. Session ID is generated
+3. User enters a message
+4. LWC sends:
+   - User Message
+   - Session ID
+5. Apex sends request to Groq AI
+6. AI response is received
+7. Chat history record is saved with:
+   - User Message
+   - AI Response
+   - User Name
+   - Session ID
+8. Response displayed in UI
+
+
+# 12. How to Use ChatSF-AI {#how-to-use-chatsf-ai}
 
 ## Step 1
 
@@ -178,7 +212,7 @@ View AI-generated response
 
 ------------------------------------------------------------------------
 
-# 12. Error Handling {#error-handling}
+# 13. Error Handling {#error-handling}
 
 ## Current Validations
 
@@ -188,7 +222,7 @@ View AI-generated response
 
 ------------------------------------------------------------------------
 
-# 13. Future Enhancements {#future-enhancements}
+# 14. Future Enhancements {#future-enhancements}
 
 Planned future improvements:
 
@@ -201,6 +235,6 @@ Planned future improvements:
 
 ------------------------------------------------------------------------
 
-# 14. Conclusion {#conclusion}
+# 15. Conclusion {#conclusion}
 
 ChatSF-AI demonstrates how external AI services can be integrated into Salesforce using Apex callouts and Lightning Web Components. The solution provides a simple and effective AI chat experience directly inside Salesforce.
