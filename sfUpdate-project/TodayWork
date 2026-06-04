@@ -1,0 +1,75 @@
+Date: 02-Jun-2026
+
+Today's Work Status
+
+Objective:
+Prepared for Salesforce Developer interviews and focused on strengthening core concepts.
+
+Topics Covered:
+
+1. Apex Triggers
+- Practiced trigger scenarios from beginner to advanced level.
+- Worked on Account, Contact, Opportunity, Case, and custom object trigger questions.
+- Reviewed bulkification and governor limits.
+- Practiced trigger handler framework approach.
+
+2. SOQL
+- Accounts with more than 5 Contacts.
+- Accounts without Contacts.
+- Accounts without Opportunities.
+- Aggregate queries using COUNT(), SUM(), GROUP BY, HAVING.
+- Latest related record queries.
+- Parent-to-Child and Child-to-Parent relationships.
+
+3. Salesforce Integration
+- REST API vs SOAP API.
+- Named Credentials.
+- External Credentials.
+- Connected Apps.
+- Authentication and authorization concepts.
+- Callouts and future callouts.
+
+4. Lightning Web Components (LWC)
+- Parent to Child communication.
+- Child to Parent communication.
+- LMS (Lightning Message Service).
+- LDS (Lightning Data Service).
+- Wire vs Imperative Apex calls.
+- Lifecycle hooks.
+- Slots and component composition.
+- Event propagation (Bubble, Capture, Compose).
+
+5. Security and Sharing
+- With Sharing vs Without Sharing vs Inherited Sharing.
+- CRUD and FLS checks.
+- WITH SECURITY_ENFORCED.
+- Security.stripInaccessible().
+- OWD, Role Hierarchy, Sharing Rules.
+
+6. Asynchronous Apex
+- Future Methods.
+- Queueable Apex.
+- Batch Apex.
+- Schedulable Apex.
+- Differences and interview scenarios.
+
+7. Interview Preparation
+- Reviewed commonly asked Salesforce interview questions.
+- Practiced Bebo Technologies style trigger questions.
+- Practiced Infosys, Deloitte, Accenture, Capgemini, and TCS level questions.
+- Reviewed real-time project scenarios and integration use cases.
+
+Challenges Identified:
+- Need more practice in Integration scenarios.
+- Need faster trigger coding during interviews.
+- Need stronger confidence in advanced SOQL and security questions.
+
+Plan for Tomorrow:
+- Complete Salesforce Integration from zero to advanced.
+- Practice 20 trigger coding questions.
+- Practice 30 SOQL interview questions.
+- Revise LWC communication and LMS.
+- Conduct one full mock interview.
+
+Overall Progress:
+Good learning session. Improved understanding of Apex Triggers, SOQL, LWC, Security, and Integration concepts. Continuing preparation for Salesforce Developer interviews targeting 4-5 years experience level.

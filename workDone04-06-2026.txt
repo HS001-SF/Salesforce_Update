@@ -1,0 +1,16 @@
+Work Done - 2026-06-04
+
+Summary:
+Today I focused on Salesforce interview preparation and hands-on Apex development practice.
+
+Details:
+
+* Attended a Salesforce Developer interview and discussed topics related to Apex, SOQL, Triggers, LWC, and Integration.
+* Prepared for upcoming Salesforce interviews by revising important concepts, interview questions, and real-time scenarios.
+* Worked on Apex Trigger scenarios, including parent-child relationship use cases, aggregate queries, and bulkification concepts.
+* Practiced Batch Apex use cases for processing large volumes of records and reviewed best practices for asynchronous processing.
+* Revised SOQL queries, governor limits, trigger frameworks, and common interview questions.
+* Studied Salesforce integration concepts, including REST APIs, callouts, authentication, and integration patterns.
+
+Outcome:
+Enhanced understanding of Apex Triggers, Batch Apex, SOQL, and Integration concepts. Gained valuable interview experience and improved readiness for future Salesforce Developer interviews.
