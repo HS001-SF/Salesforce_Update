@@ -70,3 +70,60 @@ This learning track is directly relevant to the assemble.ai evaluation work abov
 ## Looking Ahead
 - Continue Agentforce learning track, aiming to complete relevant Trailhead trail(s) in the coming week.
 
+
+# End of Day Report
+
+**Date:** June 30, 2026
+**Prepared by:** Aniket
+**Role:** Salesforce Developer, iMark Infotech Pvt. Ltd.
+
+---
+
+## Summary
+
+Continued progressing Salesforce **Agentforce** learning by moving from concepts into a hands-on build: integrated an Agentforce AI agent with a public Facebook Page, so visitors chatting on the Page get an AI-powered assistant via Service Cloud Messaging.
+
+## Work Completed
+
+### 1. Facebook Page Setup
+- Created a public Facebook Page to serve as the customer-facing channel for the integration.
+
+### 2. Agentforce Agent Creation
+- Created an **Agentforce Agent** to act as the AI assistant for the channel.
+- Assigned **Topics** to the agent to define what categories of conversation it should handle.
+- Assigned a **Subagent** to extend/delegate specific conversation handling within the agent setup.
+
+### 3. Messaging Channel Configuration
+- Set up **Messaging for Facebook** in Service Cloud (Salesforce's native Meta Messenger channel), connecting the Salesforce org to the Facebook Page.
+- Created a **Routing Configuration** to control how incoming messaging sessions get routed (e.g., to the Agentforce agent vs. a human queue).
+- Created a **Messaging Session** record type/setup to track and manage conversations coming through the channel.
+
+### 4. Conversation Flow
+- Built a **Flow** to drive the Agentforce service agent's conversational logic and actions within the messaging session.
+
+### 5. Compliance / Opt-In
+- Configured **Double Opt-In** for the messaging channel, ensuring users explicitly confirm consent before receiving messages — required for Meta Messenger compliance.
+
+### 6. Testing
+- Tested the full setup end-to-end on the live Facebook Page.
+- Confirmed the AI assistant responded correctly within the Page's chat, validating the agent, routing, flow, and opt-in all worked together as expected.
+
+## Possible Gaps / Steps to Verify
+
+A few steps are commonly required for this kind of setup and weren't explicitly mentioned — worth double-checking if not already done:
+
+- **Meta Business/Developer App setup:** Connecting a Facebook Page to Salesforce typically requires creating/configuring a Meta App in Meta Business Suite or developers.facebook.com, and generating a Page Access Token used during the Messaging for Facebook channel setup.
+- **Presence/Omni-Channel setup:** If routing also falls back to human agents, checking that Omni-Channel presence statuses and queues are configured alongside the routing configuration.
+
+## Status
+
+| Task | Status |
+|---|---|
+| Facebook Page creation | Completed |
+| Agentforce agent creation | Completed |
+| Topics & subagent assignment | Completed |
+| Messaging for Facebook channel setup | Completed |
+| Routing configuration & messaging session | Completed |
+| Flow for service agent | Completed |
+| Double opt-in configuration | Completed |
+| End-to-end testing | Completed — working as expected |
