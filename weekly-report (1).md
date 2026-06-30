@@ -69,4 +69,4 @@ This learning track is directly relevant to the assemble.ai evaluation work abov
 
 ## Looking Ahead
 - Continue Agentforce learning track, aiming to complete relevant Trailhead trail(s) in the coming week.
-- Possible next step: explore whether Agentforce concepts can be applied to extend the SLA Countdown Component (e.g., proactive agent-driven alerts as Cases approach breach).
+
