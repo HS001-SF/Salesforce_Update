@@ -127,3 +127,54 @@ A few steps are commonly required for this kind of setup and weren't explicitly 
 | Flow for service agent | Completed |
 | Double opt-in configuration | Completed |
 | End-to-end testing | Completed — working as expected |
+
+
+# End of Day Report
+
+**Date:** July 1, 2026
+**Prepared by:** Aniket
+**Role:** Salesforce Developer, iMark Infotech Pvt. Ltd.
+
+---
+
+## Summary
+
+Continued Agentforce upskilling with a focus on understanding agent behavior in multi-topic scenarios, and revisited the Facebook Messenger integration built yesterday to document observations and identify areas for improvement.
+
+---
+
+## Work Completed
+
+### 1. Agentforce – Multi-Topic Scenario Exploration
+
+- Studied how Agentforce handles conversations that span multiple topics — specifically how the agent decides to switch topics mid-conversation and how subagent handoffs behave in those transitions.
+- Reviewed Salesforce documentation on **Topic classification** and how confidence thresholds influence routing decisions.
+- Noted edge cases where topic ambiguity could cause incorrect routing, and explored how to mitigate this using clearer topic descriptions and intent examples.
+
+### 2. Facebook Messenger Integration – Post-Build Review
+
+- Revisited the Agentforce + Facebook Page integration completed on June 30 to validate behavior across a few additional test scenarios.
+- Tested edge cases including: user sending an unsupported query, conversation timeout behavior, and double opt-in re-prompt on a second session.
+- Documented findings to inform any refinements needed before using this setup as a reference implementation.
+
+### 3. Trailhead Progress
+
+- Completed a Trailhead unit on **Agentforce Service Agent configuration**, reinforcing concepts applied in yesterday's hands-on build.
+- Gained additional Trailhead points, continuing progress on the Agentblazer learning path.
+
+### 4. Salesforce CPQ – Basics
+
+- Began learning **Salesforce CPQ (Configure, Price, Quote)** from the ground up.
+- Covered foundational concepts including what CPQ solves in the quote-to-cash process, the role of the SBQQ (SteelBrick) package, and how CPQ sits within the broader Salesforce ecosystem.
+- Explored the core object model: Products, Price Books, Quotes, Quote Line Items, and how they interact within the CPQ quoting lifecycle.
+
+---
+
+## Status
+
+| Task | Status |
+|---|---|
+| Multi-topic scenario research | Completed |
+| Facebook integration post-build review | Completed |
+| Trailhead – Agentforce Service Agent unit | Completed |
+| Salesforce CPQ – Basics | Started |
