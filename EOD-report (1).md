@@ -178,3 +178,6 @@ Continued Agentforce upskilling with a focus on understanding agent behavior in 
 | Facebook integration post-build review | Completed |
 | Trailhead – Agentforce Service Agent unit | Completed |
 | Salesforce CPQ – Basics | Started |
+
+
+
