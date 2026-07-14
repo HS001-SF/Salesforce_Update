@@ -110,3 +110,44 @@ Dedicated the day to revising and deepening knowledge of **Salesforce Integratio
 
 ---
 
+# End of Day Report
+
+**Date:** July 14, 2026
+**Prepared by:** Aniket
+**Role:** Salesforce Developer, iMark Infotech Pvt. Ltd.
+
+---
+
+## Summary
+
+Continued progressing through the Salesforce Integration learning track, covering two key modules today: **Middleware platforms** used in enterprise integration architectures, and **Asynchronous Integration** patterns native to Salesforce. These two areas together form the backbone of how Salesforce integrates with external systems at scale.
+
+---
+
+Studied the role of **middleware** in enterprise integration — middleware sits between Salesforce and external systems, handling data transformation, routing, orchestration, and protocol translation so that individual systems don't need to be directly coupled to each other.
+
+Covered the following platforms:
+
+- **MuleSoft** — Salesforce's own integration platform (acquired 2018). Uses an API-led connectivity model with reusable APIs organized into System, Process, and Experience layers. The industry standard for Salesforce-centric enterprise integrations.
+- **Boomi (Dell Boomi)** — a cloud-native iPaaS (Integration Platform as a Service) known for its low-code drag-and-drop interface and wide connector library. Often compared directly to MuleSoft for mid-market integrations.
+- **Informatica** — strong in data integration and ETL (Extract, Transform, Load) scenarios, particularly for large-scale data migration and master data management (MDM) alongside Salesforce.
+- **Jitterbit** — a mid-market iPaaS focused on speed of deployment, with pre-built Salesforce connectors and a visual design studio. Popular for smaller teams needing quick integration setup.
+- **Azure Logic Apps** — Microsoft's serverless integration service, useful when the wider tech stack is Azure-based. Offers event-driven workflows and native connectors to both Microsoft services and Salesforce.
+
+Key takeaway: the choice of middleware depends on factors like org size, existing tech stack, volume of data, and whether the requirement is real-time API orchestration (MuleSoft) vs. batch data sync (Informatica) vs. lightweight event-driven workflows (Azure Logic Apps).
+
+---
+
+Studied Salesforce-native **asynchronous patterns** — used when operations are too large, long-running, or external-dependency-heavy to run synchronously within Salesforce governor limits.
+
+#### Apex Asynchronous Patterns
+
+- **Future Methods (`@future`)** — annotated Apex methods that run in a separate thread after the current transaction completes. Used for callouts from triggers and simple async operations. Limitations: no chaining, no monitoring, limited parameter types.
+- **Queueable Apex** — an improved version of Future methods. Supports chaining (a Queueable can enqueue another), accepts complex object types as parameters, and provides a Job ID for monitoring via `AsyncApexJob`. Preferred over `@future` for most async use cases.
+- **Batch Apex** — designed for processing large volumes of records (up to 50 million) by breaking them into configurable chunks (`Database.Batchable` interface with `start`, `execute`, `finish` methods). Can implement `Database.Stateful` to maintain state across batches and `Database.AllowsCallouts` for external HTTP calls per batch.
+
+#### Event-Driven Asynchronous Patterns
+
+- **Platform Events** — Salesforce's publish/subscribe (pub/sub) messaging framework. A publisher fires an event (a Platform Event record), and any number of subscribers (Flows, Apex triggers, external systems) react to it independently and asynchronously. Decouples the producer from the consumer entirely.
+- **Change Data Capture (CDC)** — automatically publishes change events whenever a Salesforce record is created, updated, deleted, or undeleted. External systems can subscribe to these events via the Event Bus to stay in sync with Salesforce data in near real-time — without polling the API.
+- **Event Bus** — the underlying infrastructure that powers both Platform Events and CDC. Acts as the message broker, holding published events for up to 72 hours (retention window) so subscribers can replay missed events if needed. Supports both Salesforce-internal subscribers and external systems via CometD (Streaming API).
