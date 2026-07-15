@@ -151,3 +151,75 @@ Studied Salesforce-native **asynchronous patterns** — used when operations are
 - **Platform Events** — Salesforce's publish/subscribe (pub/sub) messaging framework. A publisher fires an event (a Platform Event record), and any number of subscribers (Flows, Apex triggers, external systems) react to it independently and asynchronously. Decouples the producer from the consumer entirely.
 - **Change Data Capture (CDC)** — automatically publishes change events whenever a Salesforce record is created, updated, deleted, or undeleted. External systems can subscribe to these events via the Event Bus to stay in sync with Salesforce data in near real-time — without polling the API.
 - **Event Bus** — the underlying infrastructure that powers both Platform Events and CDC. Acts as the message broker, holding published events for up to 72 hours (retention window) so subscribers can replay missed events if needed. Supports both Salesforce-internal subscribers and external systems via CometD (Streaming API).
+
+# End of Day Report
+
+**Date:** July 15, 2026
+**Prepared by:** Aniket
+**Role:** Salesforce Developer, iMark Infotech Pvt. Ltd.
+
+---
+
+## Summary
+
+Began learning **Salesforce Experience Cloud** from the ground up — starting with core concepts, site architecture, and then going deep on the sharing and security model, which is the most critical and commonly misunderstood part of Experience Cloud implementations.
+
+---
+
+## Work Completed
+
+### 1. What is Experience Cloud
+
+- Studied how Experience Cloud allows exposing a scoped subset of a Salesforce org — data, records, Flows, Knowledge articles — to external users who are not internal Salesforce users.
+- Understood the three primary audience types:
+  - **Customers** — self-service portals, case tracking, order history
+  - **Partners** — deal registration, lead distribution, PRM-style dashboards
+  - **Employees** — intranets, HR self-service portals
+- Understood that a "site" is essentially a Force.com/Lightning app with its own URL, branding, and page layouts configured via Experience Builder.
+
+### 2. Site Templates & Architecture
+
+- Covered the available site templates:
+  - **Customer Service** — for customer-facing support portals
+  - **Partner Central** — for partner relationship management
+  - **Build Your Own** — flexible template supporting both LWR and Aura runtimes
+- Studied the difference between **LWR (Lightning Web Runtime)** — the modern CMS-driven standard — and the older **Aura-based** sites.
+- Covered the key builder tools: **Experience Builder** (drag-and-drop page builder), **CMS Workspaces** for content management, and **Audience Targeting** for personalized content delivery.
+
+### 3. Experience Cloud Sharing Model – Deep Dive
+
+Focused heavily on how external users access data — this works differently from internal users and is the area most likely to cause issues in real implementations.
+
+#### Sharing Sets
+- Used with base-level external licenses (Customer Community).
+- Works via an **Access Mapping**: a declarative rule that says "grant access to records where a lookup field on the record matches a field on the external user's Contact/Account."
+- Example: Contact "Priya" logs into the portal. A Sharing Set says "grant Read/Write on Case where `Case.ContactId = User.ContactId`". Every Case tied to Priya is automatically visible to her as new Cases are created — no manual sharing needed.
+
+#### Share Groups + Role Hierarchy
+- Used with **Customer Community Plus** or **Partner Community** licenses, which support an external role hierarchy (unlike base Customer Community, which is flat).
+- External users get Portal Roles (e.g. "Acme Corp - Manager", "Acme Corp - User") that roll up like an internal org chart.
+- **Share Groups** bundle multiple portal roles together, allowing records relevant to an entire account team to be shared at once — useful for deal registrations or shared partner assets.
+
+#### Guest User Access
+- Governs unauthenticated (anonymous) visitors — public-facing pages like a product catalog or an unathenticated case submission form.
+- Access is controlled purely by **object/field permissions on the Guest User profile** — OWD, role hierarchy, and standard sharing rules largely don't apply.
+- Salesforce now defaults to **"Restrict guest user access" enabled**, meaning nothing is exposed unless explicitly granted on the Guest User profile.
+- Common real-world issue: a public form fails silently because Guest User profile lacks Create access on the target object — a permissions issue, not a code issue.
+
+#### Summary – Sharing Mechanism Comparison
+
+| Mechanism | Who | Based On |
+|---|---|---|
+| Sharing Set | Customer Community (flat) | Record-to-user field matching |
+| Share Group + Role Hierarchy | Community Plus / Partner | Portal roles, org-chart-like |
+| Guest User | Anonymous visitors | Object/field permissions only, no hierarchy |
+
+### 4. Connection to Existing Knowledge
+
+- **Service Cloud Case work** → Customer Community customers viewing and updating their own Cases via Sharing Sets.
+- **CPQ knowledge** → Partner Community users configuring quotes for their own deals using the role hierarchy model.
+
+### 5. Licensing Overview
+
+- Covered external user license types: **Customer Community**, **Customer Community Plus**, **Partner Community**, and guest user (no license).
+- Noted that license type directly determines which sharing mechanism is available and whether external role hierarchy is supported.
