@@ -223,3 +223,70 @@ Focused heavily on how external users access data — this works differently fro
 
 - Covered external user license types: **Customer Community**, **Customer Community Plus**, **Partner Community**, and guest user (no license).
 - Noted that license type directly determines which sharing mechanism is available and whether external role hierarchy is supported.
+# End of Day Report
+
+**Date:** July 16, 2026
+**Prepared by:** Aniket
+**Role:** Salesforce Developer, iMark Infotech Pvt. Ltd.
+
+---
+
+## Summary
+
+Split the day between hands-on R&D investigating a real Salesforce trigger conflict issue, and broadening general tech awareness across cloud infrastructure and modern data platforms relevant to the Salesforce ecosystem.
+
+---
+
+## Work Completed
+
+### 1. R&D – Multiple Triggers on Same Object
+
+Investigated a common but problematic Salesforce pattern: **two triggers existing on the same object and firing simultaneously**, which leads to unpredictable execution order, duplicate logic runs, and hard-to-debug side effects.
+
+**The Problem:**
+Salesforce does not guarantee the execution order of multiple triggers on the same object. When two triggers both fire on the same event (e.g., both `before insert`), they can conflict — running the same logic twice, overwriting each other's field updates, or causing governor limit breaches when combined DML/SOQL consumption adds up.
+
+**Root Cause:**
+Typically happens when triggers are added incrementally over time by different developers without a unified trigger strategy in place.
+
+**Solution — One Trigger Per Object Pattern:**
+The Salesforce best practice is to maintain a single trigger per object per event, which delegates all logic to an Apex handler class. This gives full control over execution order, makes testing easier, and prevents conflicts entirely.
+
+```apex
+// Single trigger on Account
+trigger AccountTrigger on Account (before insert, before update, after insert, after update) {
+    AccountTriggerHandler handler = new AccountTriggerHandler();
+    if (Trigger.isBefore && Trigger.isInsert) handler.onBeforeInsert(Trigger.new);
+    if (Trigger.isBefore && Trigger.isUpdate) handler.onBeforeUpdate(Trigger.new, Trigger.oldMap);
+    if (Trigger.isAfter && Trigger.isInsert) handler.onAfterInsert(Trigger.new);
+    if (Trigger.isAfter && Trigger.isUpdate) handler.onAfterUpdate(Trigger.new, Trigger.oldMap);
+}
+```
+
+**Additional Considerations Explored:**
+- Using a **TriggerHandler framework** (e.g. Kevin O'Hara's pattern) for even cleaner separation of concerns.
+- Using a **static boolean flag** to prevent recursive trigger execution — a related issue that often surfaces alongside multi-trigger conflicts.
+- Merging existing duplicate triggers into one as a refactoring task, carefully testing each handler method after consolidation.
+
+---
+
+### 2. General Tech Awareness – Cloud & Modern Data Platforms
+
+Covered foundational awareness of technologies that frequently appear alongside Salesforce in enterprise architectures.
+
+#### AWS (Amazon Web Services)
+- Understood AWS as the leading cloud infrastructure platform — providing compute (EC2), storage (S3), serverless functions (Lambda), and managed databases (RDS, DynamoDB) as services.
+- Relevance to Salesforce: AWS is commonly used to host middleware, integration layers, and data pipelines that connect to Salesforce via REST/SOAP APIs or event-driven patterns (Platform Events → AWS EventBridge, etc.).
+
+#### Docker
+- Understood Docker as a containerization platform — packaging an application and all its dependencies into a portable, self-contained "container" that runs consistently across any environment.
+- Relevance to Salesforce: Used in CI/CD pipelines for Salesforce DevOps (e.g., containerized SFDX/SF CLI environments for automated deployments), and for hosting microservices that integrate with Salesforce.
+
+#### Snowflake
+- Understood Snowflake as a cloud-native data warehouse platform — designed for analytical workloads, storing and querying large volumes of structured data across multiple cloud providers.
+- Relevance to Salesforce: A common pattern is syncing Salesforce data into Snowflake (via MuleSoft, Informatica, or Salesforce's own Data Cloud connectors) for reporting and BI that goes beyond Salesforce's native analytics capabilities.
+
+#### Headless Salesforce
+- Understood "Headless Salesforce" as an architectural pattern where Salesforce acts purely as a **backend data and logic layer** (APIs, automation, commerce engine) while the front-end UI is built on a completely separate stack (React, Next.js, mobile apps, etc.).
+- Common in **Salesforce B2C Commerce (Headless Commerce)** and **Experience Cloud LWR sites**, where the presentation layer is decoupled from Salesforce's standard UI components.
+- Key benefit: full front-end flexibility without being constrained to Lightning components or Experience Builder templates.
