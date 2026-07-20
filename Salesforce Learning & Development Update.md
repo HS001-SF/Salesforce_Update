@@ -290,3 +290,250 @@ Covered foundational awareness of technologies that frequently appear alongside 
 - Understood "Headless Salesforce" as an architectural pattern where Salesforce acts purely as a **backend data and logic layer** (APIs, automation, commerce engine) while the front-end UI is built on a completely separate stack (React, Next.js, mobile apps, etc.).
 - Common in **Salesforce B2C Commerce (Headless Commerce)** and **Experience Cloud LWR sites**, where the presentation layer is decoupled from Salesforce's standard UI components.
 - Key benefit: full front-end flexibility without being constrained to Lightning components or Experience Builder templates.
+
+# End of Day Report
+
+**Date:** July 18, 2026
+**Prepared by:** Aniket
+**Role:** Salesforce Developer, iMark Infotech Pvt. Ltd.
+
+---
+
+## Summary
+
+Dedicated the day to an in-depth revision of **SOQL** and **Batch Apex**, going deeper than the previous session — covering aggregate functions, clauses, and operators in SOQL, and expanding Batch Apex knowledge to include the full set of interfaces, DML result handling, and error management patterns.
+
+---
+
+## Work Completed
+
+### 1. SOQL – Deep Revision
+
+#### Child to Parent (Dot Notation)
+Traverses from a child record up to its parent using dot notation on the relationship field name.
+
+```soql
+SELECT Id, Subject, Account.Name, Account.Industry
+FROM Case
+WHERE Account.Industry = 'Technology'
+```
+
+- Uses the **relationship name** on the child (e.g. `Account`, `Owner`, or `Custom__r` for custom lookups).
+- Can traverse up to **5 levels** of parent relationships.
+- Custom lookup relationship names use `__r` suffix (e.g. `Region__r.Name`).
+
+---
+
+#### Parent to Child (Subquery)
+Queries a parent and retrieves its related child records in a nested subquery.
+
+```soql
+SELECT Id, Name,
+    (SELECT Id, Subject, Status FROM Cases)
+FROM Account
+WHERE Industry = 'Technology'
+```
+
+- Uses the **plural child relationship name** (e.g. `Cases`, `Contacts`, `Custom_Objects__r`).
+- Returns children as a nested list — accessed in Apex via `account.Cases`.
+- Up to **20 subqueries** allowed per SOQL statement.
+- Counts as **1 SOQL query** regardless of child record count.
+
+---
+
+#### Aggregate Functions
+Used to summarize and compute values across records. Always used with `AggregateResult` as the return type in Apex.
+
+```soql
+SELECT Account.Name, COUNT(Id) total, SUM(Amount) totalAmount, AVG(Amount) avgAmount
+FROM Opportunity
+WHERE StageName = 'Closed Won'
+GROUP BY Account.Name
+HAVING COUNT(Id) > 5
+```
+
+| Function | Description |
+|---|---|
+| `COUNT(field)` | Count of non-null values |
+| `COUNT_DISTINCT(field)` | Count of unique values |
+| `SUM(field)` | Total sum of a numeric field |
+| `AVG(field)` | Average of a numeric field |
+| `MIN(field)` | Minimum value |
+| `MAX(field)` | Maximum value |
+
+- `GROUP BY` — required when using aggregate functions alongside non-aggregate fields.
+- `HAVING` — filters on aggregate results (like `WHERE` but for aggregated data).
+- Result accessed in Apex: `(Integer) result.get('total')`.
+
+---
+
+#### SOQL Clauses
+
+| Clause | Purpose | Example |
+|---|---|---|
+| `WHERE` | Filter records | `WHERE Status = 'Open'` |
+| `ORDER BY` | Sort results | `ORDER BY CreatedDate DESC` |
+| `LIMIT` | Cap number of results | `LIMIT 100` |
+| `OFFSET` | Skip N records (pagination) | `OFFSET 50` |
+| `GROUP BY` | Group records for aggregation | `GROUP BY StageName` |
+| `HAVING` | Filter on aggregated values | `HAVING COUNT(Id) > 3` |
+| `WITH SECURITY_ENFORCED` | Enforce FLS/CRUD at query level | `WITH SECURITY_ENFORCED` |
+| `FOR UPDATE` | Lock records during transaction | `FOR UPDATE` |
+| `NULLS FIRST / LAST` | Control null placement in ORDER BY | `ORDER BY Amount NULLS LAST` |
+
+---
+
+#### SOQL Operators
+
+| Operator | Description | Example |
+|---|---|---|
+| `=` | Equals | `WHERE Status = 'Open'` |
+| `!=` | Not equals | `WHERE Status != 'Closed'` |
+| `>` / `<` | Greater / Less than | `WHERE Amount > 1000` |
+| `>=` / `<=` | Greater / Less than or equal | `WHERE Amount >= 500` |
+| `LIKE` | Pattern match (`%` wildcard) | `WHERE Name LIKE 'Acme%'` |
+| `IN` | Matches any value in a list | `WHERE Id IN :idList` |
+| `NOT IN` | Excludes values in a list | `WHERE Id NOT IN :idList` |
+| `INCLUDES` | Multi-select picklist contains | `WHERE Categories__c INCLUDES ('Tech')` |
+| `EXCLUDES` | Multi-select picklist excludes | `WHERE Categories__c EXCLUDES ('HR')` |
+| `AND` / `OR` | Logical operators | `WHERE Status = 'Open' AND Priority = 'High'` |
+
+---
+
+### 2. Batch Apex – Deep Revision
+
+#### Interface
+A Batch Apex class implements `Database.Batchable<SObject>` and must define three methods: `start`, `execute`, and `finish`.
+
+```apex
+global class MyBatch implements Database.Batchable<SObject>, Database.Stateful, Database.AllowsCallouts {
+    // class body
+}
+```
+
+---
+
+#### start(), execute(), finish() Methods
+
+```apex
+// start() — defines the scope of records to process
+global Database.QueryLocator start(Database.BatchableContext bc) {
+    return Database.getQueryLocator('SELECT Id, Name FROM Account');
+}
+
+// execute() — processes each chunk of records (called once per batch)
+global void execute(Database.BatchableContext bc, List<Account> scope) {
+    // business logic per chunk
+}
+
+// finish() — runs once after all chunks complete
+global void finish(Database.BatchableContext bc) {
+    // post-processing: send email, chain next batch, etc.
+}
+```
+
+---
+
+#### QueryLocator vs Iterable
+
+| | `Database.QueryLocator` | `Iterable<SObject>` |
+|---|---|---|
+| **Used for** | Standard SOQL-based record sets | Custom data sources, complex filtering |
+| **Record limit** | Up to **50 million** records | Up to **50,000** records |
+| **How defined** | `Database.getQueryLocator(query)` | Custom iterator class implementing `Iterator<SObject>` |
+| **When to use** | Most batch jobs | When SOQL alone can't define the scope (e.g. callout-based data, complex in-memory filtering) |
+
+---
+
+#### Database.Stateful
+By default, instance variables **reset between each `execute()` chunk**. Implementing `Database.Stateful` preserves variable state across all chunks — essential for tracking counts, accumulating errors, or building summary data across the full batch run.
+
+```apex
+global class MyBatch implements Database.Batchable<SObject>, Database.Stateful {
+    global Integer successCount = 0;
+    global Integer failCount = 0;
+
+    global void execute(Database.BatchableContext bc, List<Account> scope) {
+        // successCount and failCount persist across chunks
+    }
+}
+```
+
+---
+
+#### Database.AllowsCallouts
+Required to make HTTP callouts (external REST/SOAP API calls) from within `execute()`. Without it, a callout attempt throws a `System.CalloutException`.
+
+```apex
+global class MyBatch implements Database.Batchable<SObject>, Database.AllowsCallouts {
+    global void execute(Database.BatchableContext bc, List<Account> scope) {
+        Http http = new Http();
+        HttpRequest req = new HttpRequest();
+        // callout logic here
+    }
+}
+```
+
+---
+
+#### Database.SaveResult
+Returned by `Database.insert()`, `Database.update()`, `Database.upsert()` when called with `allOrNone = false`. Lets you inspect which records succeeded and which failed without the entire operation rolling back.
+
+```apex
+List<Database.SaveResult> results = Database.update(scope, false);
+for (Database.SaveResult sr : results) {
+    if (sr.isSuccess()) {
+        successCount++;
+    } else {
+        failCount++;
+    }
+}
+```
+
+---
+
+#### Database.update()
+Partial DML method — updates records and returns a list of `SaveResult` objects. The `false` parameter means **partial success is allowed** — failed records are logged but don't roll back successful ones.
+
+```apex
+List<Database.SaveResult> results = Database.update(scope, false);
+```
+
+Compare to standard DML: `update scope` — all-or-nothing, throws exception on any failure.
+
+---
+
+#### Database.SaveResult.getErrors() / showError
+Used to extract error details from a failed `SaveResult`.
+
+```apex
+List<Database.SaveResult> results = Database.update(scope, false);
+for (Database.SaveResult sr : results) {
+    if (!sr.isSuccess()) {
+        for (Database.Error err : sr.getErrors()) {
+            System.debug('Error: ' + err.getMessage());
+            System.debug('Fields: ' + err.getFields());
+            System.debug('Status Code: ' + err.getStatusCode());
+        }
+    }
+}
+```
+
+- `err.getMessage()` — human-readable error message.
+- `err.getFields()` — fields that caused the error.
+- `err.getStatusCode()` — Salesforce status code (e.g. `FIELD_CUSTOM_VALIDATION_EXCEPTION`).
+
+---
+
+#### Database.executeBatch()
+Submits a Batch Apex job to the queue and returns a Job ID (`AsyncApexJob` ID) for monitoring.
+
+```apex
+MyBatch batch = new MyBatch();
+Id jobId = Database.executeBatch(batch, 200); // 200 = chunk size
+```
+
+- Chunk size (scope size) can be set between **1 and 2,000** (default 200 recommended).
+- Smaller chunk size = more transactions, safer on limits; larger = fewer transactions, faster.
+- Job status tracked via: `[SELECT Status, JobItemsProcessed, TotalJobItems FROM AsyncApexJob WHERE Id = :jobId]`.
+- Max **5 batch jobs** running simultaneously per org.
