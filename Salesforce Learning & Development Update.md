@@ -537,3 +537,143 @@ Id jobId = Database.executeBatch(batch, 200); // 200 = chunk size
 - Smaller chunk size = more transactions, safer on limits; larger = fewer transactions, faster.
 - Job status tracked via: `[SELECT Status, JobItemsProcessed, TotalJobItems FROM AsyncApexJob WHERE Id = :jobId]`.
 - Max **5 batch jobs** running simultaneously per org.
+
+# End of Day Report
+
+**Date:** July 21, 2026
+**Prepared by:** Aniket
+**Role:** Salesforce Developer, iMark Infotech Pvt. Ltd.
+
+---
+
+## Summary
+
+Focused the day on revising and deepening understanding of **Queueable Apex** — Salesforce's most flexible asynchronous Apex pattern, covering its interface, job chaining, callout support, and how it compares to Future methods and Batch Apex.
+
+---
+
+## Work Completed
+
+### Queueable Apex
+
+#### What is Queueable Apex?
+Queueable Apex is an asynchronous execution framework that runs outside the current transaction, in a separate thread with its own governor limits. It is the preferred upgrade from `@future` methods, offering more power and flexibility for most async use cases that don't require bulk record processing.
+
+---
+
+#### Interface
+A Queueable class implements the `Queueable` interface and must define the `execute()` method.
+
+```apex
+public class MyQueueable implements Queueable {
+    public void execute(QueueableContext context) {
+        // async logic here
+    }
+}
+```
+
+To enqueue the job:
+
+```apex
+Id jobId = System.enqueueJob(new MyQueueable());
+```
+
+The returned `jobId` maps to an `AsyncApexJob` record and can be used to monitor job status.
+
+---
+
+#### Passing Data into a Queueable
+Unlike `@future` methods (which only accept primitives), Queueable classes can accept **complex data types** — objects, lists, maps — via the constructor.
+
+```apex
+public class MyQueueable implements Queueable {
+    private List<Account> accounts;
+
+    public MyQueueable(List<Account> accounts) {
+        this.accounts = accounts;
+    }
+
+    public void execute(QueueableContext context) {
+        for (Account acc : accounts) {
+            // process each account
+        }
+        update accounts;
+    }
+}
+
+// Enqueue with data
+System.enqueueJob(new MyQueueable(accountList));
+```
+
+---
+
+#### Job Chaining
+One of Queueable's key advantages — a Queueable job can enqueue **another Queueable from within its own `execute()` method**, creating a chain of sequential async jobs.
+
+```apex
+public class Step1 implements Queueable {
+    public void execute(QueueableContext context) {
+        // Step 1 logic
+        System.enqueueJob(new Step2()); // chain to next job
+    }
+}
+
+public class Step2 implements Queueable {
+    public void execute(QueueableContext context) {
+        // Step 2 logic
+    }
+}
+```
+
+- Only **1 child job** can be enqueued per `execute()` call.
+- Chaining depth is **unlimited in production** but limited to **5 levels in test context**.
+
+---
+
+#### Queueable with Callouts
+To make HTTP callouts from a Queueable job, implement the `Database.AllowsCallouts` interface alongside `Queueable`.
+
+```apex
+public class MyQueueable implements Queueable, Database.AllowsCallouts {
+    public void execute(QueueableContext context) {
+        Http http = new Http();
+        HttpRequest req = new HttpRequest();
+        req.setEndpoint('https://api.example.com/data');
+        req.setMethod('GET');
+        HttpResponse res = http.send(req);
+        System.debug(res.getBody());
+    }
+}
+```
+
+---
+
+#### Monitoring a Queueable Job
+
+```soql
+SELECT Id, Status, JobType, CreatedDate, CompletedDate
+FROM AsyncApexJob
+WHERE Id = :jobId
+```
+
+Status values: `Queued` → `Processing` → `Completed` / `Failed`.
+
+---
+
+#### Queueable vs @future vs Batch Apex
+
+| Feature | `@future` | Queueable | Batch Apex |
+|---|---|---|---|
+| Complex parameters | ❌ Primitives only | ✅ Any type | ✅ Any type |
+| Job chaining | ❌ | ✅ | ❌ (workaround via `finish()`) |
+| Callouts | ✅ (`callout=true`) | ✅ (`AllowsCallouts`) | ✅ (`AllowsCallouts`) |
+| Job ID / monitoring | ❌ | ✅ | ✅ |
+| Large record volumes | ❌ | ❌ | ✅ (up to 50M records) |
+| Best for | Simple fire-and-forget | Sequential async logic, chained jobs | Bulk data processing |
+
+---
+
+#### Governor Limits
+- Max **50 Queueable jobs** can be added to the queue per transaction.
+- In test context, only **1 `System.enqueueJob()`** call is allowed per test method (use `Test.startTest()` / `Test.stopTest()` to execute it).
+- Each Queueable job gets a **fresh, full set of governor limits** when it executes.
